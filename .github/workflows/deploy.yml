@@ -1,0 +1,21 @@
+name: Deploy to server
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow on push to main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Deploy to server
+      env:
+        DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+      run: |
+        echo "$DEPLOY_KEY" > deploy_key.pem
+        chmod 600 deploy_key.pem
+        ssh -o StrictHostKeyChecking=no -i deploy_key.pem cityhubusa@62.72.6.160 'bash -s' < /home/cityhubusa/deploy.sh
+        rm -f deploy_key.pem
